@@ -12,6 +12,13 @@ type SNOWConfig struct {
 type Client interface {
 }
 
+type client struct{}
+
 func NewSNOWClient(sc SNOWConfig) (Client, error) {
-	return nil, errors.New("error")
+	if sc.URL == nil {
+		return nil, errors.New("error")
+	}
+
+	return client{}, nil
+
 }

@@ -10,43 +10,34 @@ import (
 )
 
 var _ = Describe("Client", func() {
+	var (
+		cfg    SNOWConfig
+		client Client
+		err    error
+	)
+	JustBeforeEach(func() {
+		client, err = NewSNOWClient(cfg)
+	})
+
 	Describe("NewSNOWClient", func() {
 		It("requires a MarcosURL", func() {
 			cfg := SNOWConfig{}
 			_, err := NewSNOWClient(cfg)
-			Ω(err).
-				Should(HaveOccurred())
-
-			cfg.URL, _ = url.Parse("https://snowfield.com")
-			_, err = NewSNOWClient(cfg)
-			Ω(err).
-				ShouldNot(HaveOccurred())
+			Ω(err).Should(HaveOccurred())
 		})
-	})
-	Describe("Routine Changes", func() {
-		Describe("#Create", func() {
-			It("requires `template`", func() {
-				// client := NewSNOWClient()
-				// rc := RoutineChange{}
 
+		Context("given a valid config", func() {
+			BeforeEach(func() {
+				URL, _ := url.Parse("http://abc.com")
+				cfg = SNOWConfig{
+					URL,
+				}
+			})
+			It("returns a valid client", func() {
+				Ω(err).ShouldNot(HaveOccurred())
+				Ω(client).ShouldNot(BeNil())
 			})
 		})
 	})
-})
 
-/*
-echo '{"type":"Routine",
-    "template":"STCA0001018",
-    "affected_cis":"Yard Management System (YMS),xyzzydmg01_pilot_spec_serv_db",
-    "requested_by":"LL65YX",
-    "assigned_to": "rxr3101",
-    "u_validated_by": "Marcos Mendez",
-    "start_date": "2020-11-07 05:00:00",
-    "end_date": "2020-11-08 05:00:00",
-    "u_automation": "Manual",
-    "u_automation_pkg_no": "INT00C4E",
-    "u_fms_number": "IT-04421",
-    "comments":"testing comments",
-    "work_notes":"testing work notes"
-    }' | curl -X -s --max-time 60 -XPOST -H"Content-Type: application/json" -d @- --url "http://localhost:8080/records?model=changerequest"
-*/
+})
