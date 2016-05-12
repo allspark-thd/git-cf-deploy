@@ -29,6 +29,6 @@ test:
 	go test `go list ./... | grep -v /vendor/` -cover -ginkgo.failFast
 
 $(EXECUTABLE): $(wildcard *.go)
-	go install -o $(EXECUTABLE) -ldflags '-s -w $(LDFLAGS)'
+	go build -o $(EXECUTABLE) -ldflags '-s -w $(LDFLAGS)'
 
 build: $(EXECUTABLE)
