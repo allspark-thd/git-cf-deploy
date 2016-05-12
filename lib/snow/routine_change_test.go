@@ -13,14 +13,16 @@ var _ = Describe("RoutineChange", func() {
 		Describe("#Create", func() {
 			It("returns a change`", func() {
 				// client := NewSNOWClient()
-				rc := NewRoutineChange("", Change{})
+				rc := NewRoutineChange(Change{})
 				Ω(rc).ShouldNot(BeNil())
 			})
 			It("persists template information", func() {
 				layout := "yyyy-mm-dd hh:MM:ss"
 				startDate, _ := time.Parse(layout, "2020-11-07 05:00:00")
 				endDate, _ := time.Parse(layout, "2020-11-08 05:00:00")
-				NewRoutineChange("STCA0001018", Change{
+				NewRoutineChange(Change{
+					Template: "STAC12324",
+					Type:     "routine",
 					CIs: []CI{
 						"Yard Management System (YMS)",
 						"xyzzydmg01_pilot_spec_serv_db",
@@ -38,6 +40,7 @@ var _ = Describe("RoutineChange", func() {
 					Comments:  "testing comments",
 					WorkNotes: "testing work notes",
 				})
+
 			})
 		})
 	})

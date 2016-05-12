@@ -11,6 +11,8 @@ type DeploymentMethod struct {
 }
 
 type Change struct {
+	Template  string `json:"template"`
+	Type      string
 	CIs       []CI
 	Requestor Username
 	Assignee  Username
@@ -23,8 +25,19 @@ type Change struct {
 	WorkNotes string
 }
 type routineChange struct {
+	chg Change
 }
 
-func NewRoutineChange(template string, chg Change) routineChange {
-	return routineChange{}
+func (rc *routineChange) GetChange() string {
+	return " "
+}
+
+func (rc *routineChange) setChange(chg Change) {
+	rc.chg = chg
+}
+
+func NewRoutineChange(chg Change) routineChange {
+	rc := routineChange{}
+	rc.setChange(chg)
+	return rc
 }
