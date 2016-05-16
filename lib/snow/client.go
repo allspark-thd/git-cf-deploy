@@ -5,16 +5,19 @@ import (
 	"net/url"
 )
 
-type SNOWConfig struct {
+// Config ...
+type Config struct {
 	URL *url.URL
 }
 
+// Client ...
 type Client interface {
 }
 
 type client struct{}
 
-func NewSNOWClient(sc SNOWConfig) (Client, error) {
+// NewSNOWClient ...
+func NewSNOWClient(sc Config) (Client, error) {
 	if sc.URL == nil {
 		return nil, errors.New("error")
 	}

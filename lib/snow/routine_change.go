@@ -2,14 +2,19 @@ package snow
 
 import "time"
 
+// Username ...
 type Username string
+
+// CI ...
 type CI string
 
+// DeploymentMethod ...
 type DeploymentMethod struct {
 	ID   string
 	Type string
 }
 
+// Change ...
 type Change struct {
 	Template  string `json:"template"`
 	Type      string
@@ -24,20 +29,25 @@ type Change struct {
 	Comments  string
 	WorkNotes string
 }
-type routineChange struct {
+
+// RoutineChange ...
+type RoutineChange struct {
 	chg Change
 }
 
-func (rc *routineChange) GetChange() string {
-	return " "
+// GetChange ...
+func (rc *RoutineChange) GetChange() Change {
+	return rc.chg
 }
 
-func (rc *routineChange) setChange(chg Change) {
+// SetChange ...
+func (rc *RoutineChange) SetChange(chg Change) {
 	rc.chg = chg
 }
 
-func NewRoutineChange(chg Change) routineChange {
-	rc := routineChange{}
-	rc.setChange(chg)
+// NewRoutineChange ...
+func NewRoutineChange(chg Change) RoutineChange {
+	rc := RoutineChange{}
+	rc.SetChange(chg)
 	return rc
 }

@@ -20,7 +20,7 @@ var _ = Describe("RoutineChange", func() {
 				layout := "yyyy-mm-dd hh:MM:ss"
 				startDate, _ := time.Parse(layout, "2020-11-07 05:00:00")
 				endDate, _ := time.Parse(layout, "2020-11-08 05:00:00")
-				NewRoutineChange(Change{
+				chg := Change{
 					Template: "STAC12324",
 					Type:     "routine",
 					CIs: []CI{
@@ -39,12 +39,13 @@ var _ = Describe("RoutineChange", func() {
 					ProjectID: "IT-04421",
 					Comments:  "testing comments",
 					WorkNotes: "testing work notes",
-				})
-
+				}
+				nrc := NewRoutineChange(chg)
+				Ω(nrc).ShouldNot(BeNil())
+				Ω(nrc.GetChange()).Should(Equal(chg))
 			})
 		})
 	})
-
 })
 
 /*

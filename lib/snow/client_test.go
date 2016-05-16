@@ -11,7 +11,7 @@ import (
 
 var _ = Describe("Client", func() {
 	var (
-		cfg    SNOWConfig
+		cfg    Config
 		client Client
 		err    error
 	)
@@ -21,7 +21,7 @@ var _ = Describe("Client", func() {
 
 	Describe("NewSNOWClient", func() {
 		It("requires a MarcosURL", func() {
-			cfg := SNOWConfig{}
+			cfg := Config{}
 			_, err := NewSNOWClient(cfg)
 			Ω(err).Should(HaveOccurred())
 		})
@@ -29,7 +29,7 @@ var _ = Describe("Client", func() {
 		Context("given a valid config", func() {
 			BeforeEach(func() {
 				URL, _ := url.Parse("http://abc.com")
-				cfg = SNOWConfig{
+				cfg = Config{
 					URL,
 				}
 			})
