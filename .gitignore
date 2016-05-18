@@ -2,7 +2,7 @@
 *.o
 *.a
 *.so
-
+git-cf-deploy
 # Folders
 _obj
 _test
