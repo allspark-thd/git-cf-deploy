@@ -1,6 +1,7 @@
 package snow_test
 
 import (
+	"encoding/json"
 	"time"
 
 	. "github.com/allspark-thd/git-cf-deploy/lib/snow"
@@ -10,6 +11,36 @@ import (
 
 var _ = Describe("RoutineChange", func() {
 	Describe("Routine Changes", func() {
+		var (
+			chg Change
+			nrc RoutineChange
+		)
+		BeforeEach(func() {
+			layout := "yyyy-mm-dd hh:MM:ss"
+			startDate, _ := time.Parse(layout, "2020-11-07 05:00:00")
+			endDate, _ := time.Parse(layout, "2020-11-08 05:00:00")
+			chg = Change{
+				Template: "STAC12324",
+				Type:     "routine",
+				CIs: []CI{
+					"Yard Management System (YMS)",
+					"xyzzydmg01_pilot_spec_serv_db",
+				},
+				Requestor: "LL65YX",
+				Assignee:  "rxr3101",
+				Validator: "Marcos Mendez",
+				StartDate: startDate,
+				EndDate:   endDate,
+				DeploymentMethod: DeploymentMethod{
+					Type: "Manual",
+					ID:   "INT00C4E",
+				},
+				ProjectID: "IT-04421",
+				Comments:  "testing comments",
+				WorkNotes: "testing work notes",
+			}
+			nrc = NewRoutineChange(chg)
+		})
 		Describe("#Create", func() {
 			It("returns a change`", func() {
 				// client := NewSNOWClient()
@@ -17,32 +48,19 @@ var _ = Describe("RoutineChange", func() {
 				Ω(rc).ShouldNot(BeNil())
 			})
 			It("persists template information", func() {
-				layout := "yyyy-mm-dd hh:MM:ss"
-				startDate, _ := time.Parse(layout, "2020-11-07 05:00:00")
-				endDate, _ := time.Parse(layout, "2020-11-08 05:00:00")
-				chg := Change{
-					Template: "STAC12324",
-					Type:     "routine",
-					CIs: []CI{
-						"Yard Management System (YMS)",
-						"xyzzydmg01_pilot_spec_serv_db",
-					},
-					Requestor: "LL65YX",
-					Assignee:  "rxr3101",
-					Validator: "Marcos Mendez",
-					StartDate: startDate,
-					EndDate:   endDate,
-					DeploymentMethod: DeploymentMethod{
-						Type: "Manual",
-						ID:   "INT00C4E",
-					},
-					ProjectID: "IT-04421",
-					Comments:  "testing comments",
-					WorkNotes: "testing work notes",
-				}
-				nrc := NewRoutineChange(chg)
 				Ω(nrc).ShouldNot(BeNil())
 				Ω(nrc.GetChange()).Should(Equal(chg))
+			})
+		})
+		Describe("as JSON", func() {
+			var chgmap map[string]interface{}
+			JustBeforeEach(func() {
+				byts, _ := json.Marshal(chg)
+				json.Unmarshal(byts, &chgmap)
+			})
+			It("matches what Marcos expects", func() {
+				Ω(chgmap).Should(HaveKeyWithValue("type", chg.Type))
+				Ω(chgmap).Should(HaveKeyWithValue("", chg.Type))
 			})
 		})
 	})

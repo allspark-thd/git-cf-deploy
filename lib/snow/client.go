@@ -3,6 +3,7 @@ package snow
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 )
@@ -14,21 +15,23 @@ type Config struct {
 
 // Client ...
 type Client interface {
-	Connect(chg Change) ([]string, []string)
+	Connect(chg Change) error
 }
 
-type client struct{}
+type client struct {
+	Config Config
+}
 
 // NewSNOWClient ...
 func NewSNOWClient(sc Config) (Client, error) {
 	if sc.URL == nil {
 		return nil, errors.New("error")
 	}
-	return &client{}, nil
+	return &client{sc}, nil
 }
 
 // Connect ...
-func (c *client) Connect(chg Change) ([]string, []string) {
+func (c *client) Connect(chg Change) error {
 	var payload []byte
 	// if request.hasProxy {
 	// 	payload = []byte(`{"target":"` + request.host + `:` + request.port + `", "http_proxy":"` + request.proxyHost + `:` + request.proxyPort + `"}`)
@@ -36,13 +39,13 @@ func (c *client) Connect(chg Change) ([]string, []string) {
 	// 	payload = []byte(`{"target":"` + request.host + `:` + request.port + `"}`)
 	// }
 	payload = []byte(`{"I'm a Change!"}`)
-	req, err := http.NewRequest("POST", "http://abc.com", bytes.NewBuffer(payload))
+	req, err := http.NewRequest("POST", c.Config.URL.String()+"/records", bytes.NewBuffer(payload))
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, []string{"Unable to hit url", err.Error()}
+		return fmt.Errorf("Unable to hit url %s\n%s", "url_here", err.Error())
 	}
 	defer resp.Body.Close()
 
@@ -59,5 +62,5 @@ func (c *client) Connect(chg Change) ([]string, []string) {
 	// } else {
 	// 	response = []string{"I am unable to connect"}
 	// }
-	return []string{""}, nil
+	return nil
 }

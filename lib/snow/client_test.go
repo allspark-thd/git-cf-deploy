@@ -1,21 +1,28 @@
 package snow_test
 
 import (
-	"fmt"
 	"net/url"
 
 	. "github.com/allspark-thd/git-cf-deploy/lib/snow"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"gopkg.in/h2non/gock.v0"
+	"github.com/onsi/gomega/ghttp"
 )
 
 var _ = Describe("Client", func() {
 	var (
+		server *ghttp.Server
 		cfg    Config
 		client Client
 		err    error
 	)
+	BeforeEach(func() {
+		server = ghttp.NewServer()
+		addr, _ := url.Parse(server.URL())
+		cfg = Config{
+			URL: addr,
+		}
+	})
 	JustBeforeEach(func() {
 		client, err = NewSNOWClient(cfg)
 	})
@@ -28,12 +35,6 @@ var _ = Describe("Client", func() {
 		})
 
 		Context("given a valid config", func() {
-			BeforeEach(func() {
-				URL, _ := url.Parse("http://abc.com")
-				cfg = Config{
-					URL,
-				}
-			})
 			It("returns a valid client", func() {
 				Ω(err).ShouldNot(HaveOccurred())
 				Ω(client).ShouldNot(BeNil())
@@ -41,25 +42,22 @@ var _ = Describe("Client", func() {
 		})
 
 		Context("provided a valid change and invoked", func() {
-			BeforeEach(func() {
-				URL, _ := url.Parse("http://abc.com")
-				cfg = Config{
-					URL,
-				}
+			var chg Change
+
+			JustBeforeEach(func() {
+				chg = Change{}
+				server.AppendHandlers(
+					ghttp.VerifyRequest("POST", "/records"),
+					ghttp.VerifyJSON(`{}`),
+					ghttp.RespondWith(200, "totes"))
+				err = client.Connect(chg)
 			})
-			It("returns a succesful response", func() {
-				chg := Change{}
-				URL := "http://abc.com"
-				defer gock.Off()
-				gock.New(URL).
-					Post("").
-					JSON(`{"I'm a change"}`).
-					Reply(200).
-					BodyString("totes")
-				resp, err := client.Connect(chg)
-				fmt.Println(resp, err)
+
+			It("returns a successful response", func() {
 				Ω(err).ShouldNot(HaveOccurred())
-				Ω(client).ShouldNot(BeNil())
+			})
+			It("uses the endpoint provided to the client", func() {
+				Ω(server.ReceivedRequests()).Should(HaveLen(1))
 			})
 		})
 	})

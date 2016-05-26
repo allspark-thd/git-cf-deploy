@@ -17,7 +17,7 @@ type DeploymentMethod struct {
 // Change ...
 type Change struct {
 	Template  string `json:"template"`
-	Type      string
+	Type      string `json:"type"`
 	CIs       []CI
 	Requestor Username
 	Assignee  Username
